@@ -15,7 +15,9 @@ class DOMHelper {
 
 // handles the more info button
 class ToolTip {
-
+show(){
+    console.log("The tool tip...")
+}
 }
 //handle the project
 class ProjectItem {
@@ -26,8 +28,16 @@ class ProjectItem {
       this.connectSwitchButton(type);
     }
 
-    connectMoreInfoButton() {
 
+    showMoreInfoHandler(){
+        const tooltip = new ToolTip()
+        tooltip.show()
+    }
+
+    connectMoreInfoButton() {
+        const projectItemElement = document.getElementById(this.id);
+        const moreInfoBtn = projectItemElement.querySelector('button:first-of-type');
+        moreInfoBtn.addEventListener('click', this.showMoreInfoHandler)
     }
 
     // this method handles the click event 
