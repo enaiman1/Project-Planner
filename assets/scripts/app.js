@@ -1,3 +1,12 @@
+// this class will help move the DOM node
+class DOMHelper {
+    static moveElement(elementId, newDestionationSelector){
+        const element = document.getElementById(elementId);
+        const destinationElement = document.querySelector(newDestionationSelector);
+        destinationElement.append(element);
+    }
+}
+
 // handles the more info button
 class ToolTip {
 
@@ -19,7 +28,7 @@ class ProjectItem {
     connectSwitchButton() {
         const projectItemEl = document.getElementById(this.id);
         const switchBtn = projectItemEl.querySelector('button:last-of-type');
-        switchBtn.addEventListener('click', this.updateProjectListsHandler)
+        switchBtn.addEventListener('click', this.updateProjectListsHandler.bind(null, this.id))
     }
 }
 // create multiple instance for the different list we will have
@@ -40,8 +49,9 @@ class ProjectList {
         this.switchHandler = switchHandlerFunction;
     }
     // this method will take the item and move it to its new list
-    addProject() {
-        console.log(this);
+    addProject(project) {
+        this.projects.push(this.projects);
+        DOMHelper.moveElement(project.id, `#${this.type}-projects ul`);
     }
 
     // this mehtod helps remove an item from its current list
