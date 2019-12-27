@@ -4,20 +4,22 @@ class ToolTip {
 }
 //handle the project
 class ProjectItem {
-    constructor(id) {
+    constructor(id, updateProjectListsFunction) {
         this.id = id;
-        this.connectMoreInfoButton;
-        this.connectSwitchButton;
+        this.updateProjectListsHandler = updateProjectListsFunction;
+        this.connectMoreInfoButton();
+        this.connectSwitchButton();
     }
 
     connectMoreInfoButton() {
 
     }
 
+    // this method handles the click event 
     connectSwitchButton() {
         const projectItemEl = document.getElementById(this.id);
         const switchBtn = projectItemEl.querySelector('button:last-of-type');
-        switchBtn.addEventListener('click')
+        switchBtn.addEventListener('click', this.updateProjectListsHandler)
     }
 }
 // create multiple instance for the different list we will have
@@ -29,7 +31,7 @@ class ProjectList {
         // this will get all list of items from the id from each section from the html 
         const prjItems = document.querySelectorAll(`#${type}-projects li`);
         for (const prjItem of prjItems) {
-            this.projects.push(new ProjectItem(prjItem.id));
+            this.projects.push(new ProjectItem(prjItem.id, this.switchProject.bind(this)));
         }
         console.log(this.projects)
     }
@@ -39,7 +41,7 @@ class ProjectList {
     }
     // this method will take the item and move it to its new list
     addProject() {
-
+        console.log(this);
     }
 
     // this mehtod helps remove an item from its current list
@@ -58,8 +60,12 @@ class App {
         const activeProjectList = new ProjectList('active', )
         //creates list for finsihed projects
         const finishedProjectList = new ProjectList('finished')
-        activeProjectsList.setSwitchHandlerFunction(finishedProjectList.addProject.bind(finishedProjectList))
-    
+        activeProjectList.setSwitchHandlerFunction(
+            finishedProjectList.addProject.bind(finishedProjectList)
+            );
+        finishedProjectList.setSwitchHandlerFunction(
+            activeProjectList.addProject.bind(activeProjectList)
+            );
     }
 }
 App.init()
