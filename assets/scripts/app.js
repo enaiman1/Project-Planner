@@ -1,11 +1,17 @@
 // this class will help move the DOM node
 class DOMHelper {
-    static moveElement(elementId, newDestionationSelector){
-        const element = document.getElementById(elementId);
-        const destinationElement = document.querySelector(newDestionationSelector);
-        destinationElement.append(element);
+    static clearEventListeners(element) {
+      const clonedElement = element.cloneNode(true);
+      element.replaceWith(clonedElement);
+      return clonedElement;
     }
-}
+
+    static moveElement(elementId, newDestinationSelector) {
+        const element = document.getElementById(elementId);
+        const destinationElement = document.querySelector(newDestinationSelector);
+        destinationElement.append(element);
+      }
+    }
 
 // handles the more info button
 class ToolTip {
@@ -13,11 +19,11 @@ class ToolTip {
 }
 //handle the project
 class ProjectItem {
-    constructor(id, updateProjectListsFunction) {
-        this.id = id;
-        this.updateProjectListsHandler = updateProjectListsFunction;
-        this.connectMoreInfoButton();
-        this.connectSwitchButton();
+    constructor(id, updateProjectListsFunction, type) {
+      this.id = id;
+      this.updateProjectListsHandler = updateProjectListsFunction;
+      this.connectMoreInfoButton();
+      this.connectSwitchButton(type);
     }
 
     connectMoreInfoButton() {
@@ -25,34 +31,45 @@ class ProjectItem {
     }
 
     // this method handles the click event 
-    connectSwitchButton() {
-        const projectItemEl = document.getElementById(this.id);
-        const switchBtn = projectItemEl.querySelector('button:last-of-type');
-        switchBtn.addEventListener('click', this.updateProjectListsHandler.bind(null, this.id))
-    }
+    connectSwitchButton(type) {
+        const projectItemElement = document.getElementById(this.id);
+        let switchBtn = projectItemElement.querySelector('button:last-of-type');
+        switchBtn = DOMHelper.clearEventListeners(switchBtn);
+        switchBtn.textContent = type === 'active' ? 'Finish' : 'Activate';
+        switchBtn.addEventListener(
+          'click',
+          this.updateProjectListsHandler.bind(null, this.id)
+        );
+      }
+      update(updateProjectListsFn, type) {
+        this.updateProjectListsHandler = updateProjectListsFn;
+        this.connectSwitchButton(type);
+      }
 }
 // create multiple instance for the different list we will have
 class ProjectList {
-    projects = []
+    projects = [];
 
-    constructor(type) {
-        this.type = type
-        // this will get all list of items from the id from each section from the html 
-        const prjItems = document.querySelectorAll(`#${type}-projects li`);
-        for (const prjItem of prjItems) {
-            this.projects.push(new ProjectItem(prjItem.id, this.switchProject.bind(this)));
-        }
-        console.log(this.projects)
+  constructor(type) {
+    this.type = type;
+    const prjItems = document.querySelectorAll(`#${type}-projects li`);
+    for (const prjItem of prjItems) {
+      this.projects.push(
+        new ProjectItem(prjItem.id, this.switchProject.bind(this), this.type)
+      );
     }
+    console.log(this.projects);
+  }
 
-    setSwitchHandlerFunction(switchHandlerFunction){
-        this.switchHandler = switchHandlerFunction;
-    }
+  setSwitchHandlerFunction(switchHandlerFunction) {
+    this.switchHandler = switchHandlerFunction;
+  }
     // this method will take the item and move it to its new list
     addProject(project) {
-        this.projects.push(this.projects);
-        DOMHelper.moveElement(project.id, `#${this.type}-projects ul`);
-    }
+    this.projects.push(project);
+    DOMHelper.moveElement(project.id, `#${this.type}-projects ul`);
+    project.update(this.switchProject.bind(this), this.type);
+  }
 
     // this mehtod helps remove an item from its current list
     switchProject(projectId) {
