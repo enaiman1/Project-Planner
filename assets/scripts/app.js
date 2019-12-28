@@ -15,12 +15,33 @@ class DOMHelper {
 
 // handles the more info button
 class ToolTip {
-show(){
-    console.log("The tool tip...")
+constructor(closeNotifierFunction){
+    this.closeNotifier = closeNotifierFunction;
+}
+
+closeToolTip = ()=> {
+this.detach();
+this.closeNotifier()
+}
+
+    detach (){
+        this.element.remove();
+        // this.element.parentElement.removeChild(this.element)
+    }
+attach(){
+    const tooltipElement = document.createElement('div')
+    tooltipElement.className='card';
+    tooltipElement.textContent='Dummy!'
+    tooltipElement.addEventListener('click', this.closeToolTip);
+    this.element= tooltipElement;
+    document.body.append(tooltipElement)
+
 }
 }
 //handle the project
 class ProjectItem {
+    hasActiveToolTip = false;
+
     constructor(id, updateProjectListsFunction, type) {
       this.id = id;
       this.updateProjectListsHandler = updateProjectListsFunction;
@@ -30,8 +51,14 @@ class ProjectItem {
 
 
     showMoreInfoHandler(){
-        const tooltip = new ToolTip()
-        tooltip.show()
+        if(this.hasActiveToolTip){
+            return;
+        }
+        const tooltip = new ToolTip(()=>{
+            this.hasActiveToolTip=false;
+        })
+        tooltip.attach()
+        this.hasActiveToolTip = true;
     }
 
     connectMoreInfoButton() {
