@@ -38,9 +38,10 @@ constructor(hostElementId, insertBefore=false){
 
 // handles the more info button
 class ToolTip extends Component{
-    constructor(closeNotifierFunction) {
+    constructor(closeNotifierFunction, text) {
         super();
         this.closeNotifier = closeNotifierFunction;
+        this.text = text
         this.create()
     }
 
@@ -52,7 +53,7 @@ class ToolTip extends Component{
     create(){
         const tooltipElement = document.createElement('div')
         tooltipElement.className = 'card';
-        tooltipElement.textContent = 'Dummy!'
+        tooltipElement.textContent = this.text
         tooltipElement.addEventListener('click', this.closeToolTip);
         this.element = tooltipElement;
     }
@@ -75,9 +76,12 @@ class ProjectItem {
         if (this.hasActiveToolTip) {
             return;
         }
+        const projectElement = document.getElementById(this.id);
+        const tooltipText = projectElement.dataset.extraInfo;
         const tooltip = new ToolTip(() => {
             this.hasActiveToolTip = false;
-        })
+
+        }, tooltipText)
         tooltip.attach()
         this.hasActiveToolTip = true;
     }
@@ -85,7 +89,7 @@ class ProjectItem {
     connectMoreInfoButton() {
         const projectItemElement = document.getElementById(this.id);
         const moreInfoBtn = projectItemElement.querySelector('button:first-of-type');
-        moreInfoBtn.addEventListener('click', this.showMoreInfoHandler)
+        moreInfoBtn.addEventListener('click', this.showMoreInfoHandler.bind(this))
     }
 
     // this method handles the click event 
