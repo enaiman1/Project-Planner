@@ -38,8 +38,8 @@ constructor(hostElementId, insertBefore=false){
 
 // handles the more info button
 class ToolTip extends Component{
-    constructor(closeNotifierFunction, text) {
-        super();
+    constructor(closeNotifierFunction, text, hostElementId) {
+        super(hostElementId);
         this.closeNotifier = closeNotifierFunction;
         this.text = text
         this.create()
@@ -54,12 +54,27 @@ class ToolTip extends Component{
         const tooltipElement = document.createElement('div')
         tooltipElement.className = 'card';
         tooltipElement.textContent = this.text
+       
+        // reads the positioning for the more info tool
+        const hostElPosLeft= this.hostElement.offsetLeft;
+        const hostElPosTop = this.hostElement.offsetTop;
+        const hostElHeight = this.hostElement.clientHeight;
+        const parentElementScrolling = this.hostElement.parentElement.scrollTop
+
+        const x = hostElPosLeft + 20;
+        const y = hostElPosTop + hostElHeight - parentElementScrolling - 10;
+
+        //using css to assign new value
+        tooltipElement.style.position ='absolute'
+        tooltipElement.style.left = x + 'px'
+        tooltipElement.style.top = y + 'px';
+
         tooltipElement.addEventListener('click', this.closeToolTip);
         this.element = tooltipElement;
     }
-
-
 }
+
+
 //handle the project
 class ProjectItem {
     hasActiveToolTip = false;
@@ -81,7 +96,9 @@ class ProjectItem {
         const tooltip = new ToolTip(() => {
             this.hasActiveToolTip = false;
 
-        }, tooltipText)
+        }, 
+        tooltipText, 
+        this.id)
         tooltip.attach()
         this.hasActiveToolTip = true;
     }
