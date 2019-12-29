@@ -10,6 +10,8 @@ class DOMHelper {
         const element = document.getElementById(elementId);
         const destinationElement = document.querySelector(newDestinationSelector);
         destinationElement.append(element);
+        // will smoothily scroll the new appended item into view
+        element.scrollIntoView({behavior: 'smooth'})
     }
 }
 
