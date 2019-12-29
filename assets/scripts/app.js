@@ -11,35 +11,35 @@ class DOMHelper {
         const destinationElement = document.querySelector(newDestinationSelector);
         destinationElement.append(element);
         // will smoothily scroll the new appended item into view
-        element.scrollIntoView({behavior: 'smooth'})
+        element.scrollIntoView({ behavior: 'smooth' })
     }
 }
 
 class Component {
-constructor(hostElementId, insertBefore=false){
-    if(hostElementId){
-        this.hostElement = document.getElementById(hostElementId);
-    }else{
-        this.hostElement=document.body
+    constructor(hostElementId, insertBefore = false) {
+        if (hostElementId) {
+            this.hostElement = document.getElementById(hostElementId);
+        } else {
+            this.hostElement = document.body
+        }
+        this.insertBefore = insertBefore;
     }
-    this.insertBefore=insertBefore;
-}
 
     detach() {
-        if(this.element){
+        if (this.element) {
             this.element.remove();
             // this.element.parentElement.removeChild(this.element)
         }
-  
+
     }
     attach() {
-      this.hostElement.insertAdjacentElement(this.insertBefore ? 'afterbegin' : 'beforeend', this.element)
+        this.hostElement.insertAdjacentElement(this.insertBefore ? 'afterbegin' : 'beforeend', this.element)
 
     }
 }
 
 // handles the more info button
-class ToolTip extends Component{
+class ToolTip extends Component {
     constructor(closeNotifierFunction, text, hostElementId) {
         super(hostElementId);
         this.closeNotifier = closeNotifierFunction;
@@ -52,13 +52,17 @@ class ToolTip extends Component{
         this.closeNotifier()
     }
 
-    create(){
+    create() {
         const tooltipElement = document.createElement('div')
         tooltipElement.className = 'card';
-        tooltipElement.textContent = this.text
-       
+        const tooltipTemplate = document.getElementById('tooltip')
+        // this pass the content and creat a new node based on that
+        const tooltipBody = document.importNode(tooltipTemplate.content, true);
+        tooltipBody.querySelector('p').textContent = this.text;
+        tooltipElement.append(tooltipBody)
+
         // reads the positioning for the more info tool
-        const hostElPosLeft= this.hostElement.offsetLeft;
+        const hostElPosLeft = this.hostElement.offsetLeft;
         const hostElPosTop = this.hostElement.offsetTop;
         const hostElHeight = this.hostElement.clientHeight;
         const parentElementScrolling = this.hostElement.parentElement.scrollTop
@@ -67,7 +71,7 @@ class ToolTip extends Component{
         const y = hostElPosTop + hostElHeight - parentElementScrolling - 10;
 
         //using css to assign new value
-        tooltipElement.style.position ='absolute'
+        tooltipElement.style.position = 'absolute'
         tooltipElement.style.left = x + 'px'
         tooltipElement.style.top = y + 'px';
 
@@ -98,9 +102,9 @@ class ProjectItem {
         const tooltip = new ToolTip(() => {
             this.hasActiveToolTip = false;
 
-        }, 
-        tooltipText, 
-        this.id)
+        },
+            tooltipText,
+            this.id)
         tooltip.attach()
         this.hasActiveToolTip = true;
     }
