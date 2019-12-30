@@ -178,9 +178,13 @@ class App {
         finishedProjectList.setSwitchHandlerFunction(
             activeProjectList.addProject.bind(activeProjectList)
         );
-       document
-       .getElementById('start-analytics-btn')
-       .addEventListener('click', this.startAnalytics)
+    //    document
+    //    .getElementById('start-analytics-btn')
+    //    .addEventListener('click', this.startAnalytics)
+    const timerId = setTimeout(this.startAnalytics, 3000);
+    document.getElementById('stop-analytics-btn').addEventListener('click', ()=>{
+        clearTimeout(timerId);
+    })
     }
     // this will load the analytics.js file dynamically
     static startAnalytics(){
